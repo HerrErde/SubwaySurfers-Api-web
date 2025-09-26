@@ -1,0 +1,224 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+@font-face {
+  font-family: PowerGrotesk;
+  src: url(../font/PowerGrotesk-Medium.ttf);
+}
+
+.sidebar-brand-name {
+  font-family: PowerGrotesk;
+  font-size: 1.85rem !important;
+  font-weight: 500;
+  color: white !important;
+}
+
+.sidebar {
+  width: 16.7vw;
+}
+
+.sidebar-mobile {
+  width: 80vw;
+  display: absolute;
+  left: 0;
+  z-index: 100;
+}
+
+.sidebar-brand {
+  text-align: center;
+  padding: 33px 19px;
+  box-shadow: inset 0 -1px 0 0 hsla(0, 0%, 100%, 0.1);
+  margin-bottom: 20px;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-link {
+  width: 87%;
+  text-align: left;
+  display: block;
+  margin: auto;
+  padding: 0.65rem 0.7rem;
+  color: #ffffffe8;
+  position: relative;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.sidebar-link-top {
+  margin-top: 0.8rem;
+}
+
+.sidebar-link i {
+  -webkit-text-fill-color: transparent;
+  font-size: 1.3rem;
+  -webkit-background-clip: text !important;
+  background: #7760fe;
+}
+
+.sidebar-link a {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: start;
+  gap: 5px;
+}
+
+.font-poppins {
+  font-family: "Poppins";
+}
+
+.sidebar-link a {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 1.05rem;
+}
+
+.dark {
+  --sidebar: #030e11;
+  --sidebar-foreground: #fff;
+  --sidebar-primary: #ffffff00;
+  --sidebar-primary-foreground: #fff;
+  --sidebar-accent: #191919;
+  --sidebar-accent-foreground: oklch(0.985 0.001 106.423);
+  --sidebar-border: #333;
+  --sidebar-ring: oklch(0.553 0.013 58.071);
+}
+
+.roundborder {
+  border-top-left-radius: 37px;
+  background-size: 47px 47px;
+  background-position: 0 0, 21px 21px;
+}
+
+@media only screen and (max-width: 1024px) {
+  .formatcontainer {
+    padding-right: 20px !important;
+    padding-left: 20px !important;
+    margin-top: 22px !important;
+  }
+
+  .inputcontainer {
+    padding-left: 20px !important;
+  }
+
+  .formatbtn {
+    margin-bottom: 12px !important;
+  }
+
+  .mobilemt {
+    margin-top: 16px !important;
+  }
+
+  .containermobile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column-reverse;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  body {
+    overflow: visible !important;
+  }
+}
+
+body {
+  background-color: #09090b;
+  overflow-x: hidden;
+  overflow: hidden;
+  --grid-size: 60px;
+  text-align: left !important;
+  --grid-strength: 1px;
+  --grid-dash: 10px;
+  --grid-gap: 5px;
+  --grid-color: #333;
+  --paper-color: #09090b;
+  background-color: var(--paper-color);
+  background-size: var(--grid-dash) var(--grid-dash),
+    var(--grid-size) var(--grid-size);
+  background-image: linear-gradient(
+      to bottom,
+      transparent var(--grid-gap),
+      var(--paper-color) var(--grid-gap)
+    ),
+    linear-gradient(
+      to right,
+      var(--grid-color) var(--grid-strength),
+      transparent var(--grid-strength)
+    ),
+    linear-gradient(
+      to right,
+      transparent var(--grid-gap),
+      var(--paper-color) var(--grid-gap)
+    ),
+    linear-gradient(
+      to bottom,
+      var(--grid-color) var(--grid-strength),
+      transparent var(--grid-strength)
+    );
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  transition: background 0.3s;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+:root {
+  --main: #ffcc99;
+}
+
+.endpointSearch {
+  flex-shrink: 1;
+  transition-duration: 0.2s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  border-width: 1px;
+  background-color: #ffffff0d;
+  width: 100%;
+  border-radius: 0.5rem;
+  border: none;
+  color: #fff;
+  font-family: Poppins;
+}
+
+.endpointSearch:focus {
+  border: none;
+  outline: 2px solid var(--main);
+  outline-offset: 2px;
+}
+
+.sb-selected {
+  background: #ffcc99;
+  color: black;
+  font-weight: bold;
+}
+
+.sidebar-link:not(.sb-selected):hover {
+  background: #ffffff0d;
+  font-weight: bold;
+}

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en" class="dqvrpmxuod idc0_343">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Subway Surfers Playground</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+      rel="stylesheet" />
+    <link href="assets/css/style.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/google-protobuf/google-protobuf.js"></script>
+    <script src="assets/js/proto.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/simple-notify/dist/simple-notify.css" />
+    <script src="https://cdn.jsdelivr.net/npm/simple-notify/dist/simple-notify.min.js"></script>
+    <script src="assets/js/mobileSidebar.js"></script>
+  </head>
+
+  <body class="bg-[#09090b] text-white font-sans min-h-screen block lg:flex">
+    <div class="lg:hidden flex items-center justify-between bg-[#09090b] p-4">
+      <a href="#" class="cursor-pointer flex items-center gap-2">
+        <span class="font-bold text-white text-xl">Subway Surfers API</span>
+      </a>
+      <button
+        id="mobileSidebarToggle"
+        class="text-white text-2xl"
+        role="button"
+        aria-label="Toggle sidebar">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+
+    <div
+      id="mobileSidebar"
+      class="fixed top-0 left-0 h-full w-64 bg-[#09090b] z-50 transform -translate-x-full transition-transform duration-200 ease-in-out lg:hidden flex flex-col shadow-lg overflow-y-auto">
+      <div class="text-left font-poppins text-lg mb-5 text-[#ffcc99] p-4">
+        Endpoints
+      </div>
+      <div class="flex items-center gap-2 mb-2 p-4">
+        <button
+          id="identity-upload-btn-mobile"
+          type="button"
+          class="cursor-pointer hover:bg-[#7760fe] hover:text-white duration-100 p-2 px-6 rounded-[7px] bg-white text-black font-semibold text-sm">
+          Upload Identity
+        </button>
+        <input
+          type="file"
+          id="identity-file-mobile"
+          accept="*"
+          style="display: none" />
+        <span id="token-status-mobile" class="ml-2 text-xs"></span>
+      </div>
+      <div
+        id="mobileEndpointList"
+        class="sidebar-links mb-5 w-full flex justify-center flex-col items-center gap-3"></div>
+    </div>
+
+    <div
+      id="overlay"
+      class="fixed inset-0 bg-black bg-opacity-40 hidden z-40 lg:hidden overflow-y-auto"
+      style="touch-action: pan-y"></div>
+
+    <div
+      id="info-btn-container"
+      style="position: fixed; bottom: 24px; right: 24px; z-index: 50">
+      <button
+        id="info-btn"
+        title="Info"
+        class="btn btn-sm btn-circle bg-[#222] text-white hover:bg-[#444]"
+        style="
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        ">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 -960 960 960"
+          fill="currentColor"
+          class="size-5">
+          <path
+            d="M480-680q-33 0-56.5-23.5T400-760q0-33 23.5-56.5T480-840q33 0 56.5 23.5T560-760q0 33-23.5 56.5T480-680Zm-60 560v-480h120v480H420Z"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="block lg:flex w-full">
+      <div
+        class="sidebar hidden lg:flex w-[16.7vw] bg-[#09090b] h-screen flex-col items-center overflow-y-auto custom-scrollbar">
+        <div class="text-left font-poppins text-lg mb-5 text-[#ffcc99]">
+          Endpoints
+        </div>
+        <div class="flex items-center gap-2 mb-2">
+          <button
+            id="identity-upload-btn"
+            type="button"
+            class="cursor-pointer hover:bg-[#7760fe] hover:text-white duration-100 p-2 px-6 rounded-[7px] bg-white text-black font-semibold text-sm">
+            Upload Identity
+          </button>
+          <input
+            type="file"
+            id="identity-file"
+            accept="*"
+            style="display: none" />
+          <span id="token-status" class="ml-2 text-xs"></span>
+        </div>
+        <div
+          id="endpointList"
+          class="sidebar-links mb-5 w-full flex justify-center flex-col items-center gap-3"></div>
+      </div>
+
+      <main
+        class="flex-1 grid grid-cols-1 lg:grid-cols-2 py-10 gap-6 px-8 h-full roundborder border-l border-[#1a1a1a]">
+        <div class="bg-[#0f0f11] p-6 rounded-xl border border-[#1a1a1a]">
+          <h2
+            id="endpointTitle"
+            class="text-[#ffcc99] font-poppins text-2xl font-semibold mb-2">
+            Select an Endpoint
+          </h2>
+          <p id="endpointPath" class="font-poppins text-gray-400 mb-4">
+            Choose an endpoint from the sidebar to test.
+          </p>
+          <p id="endpointDesc" class="font-poppins text-gray-400 mb-2"></p>
+          <div id="endpointForm"></div>
+        </div>
+        <div
+          class="bg-[#0f0f11] p-6 rounded-xl border border-[#1a1a1a] flex flex-col">
+          <h3 class="text-[#ffcc99] text-xl font-poppins font-semibold mb-3">
+            Result
+          </h3>
+          <div
+            id="responseResult"
+            class="bg-[#121212] border border-[#333] rounded-lg p-4 font-mono text-left text-sm text-gray-200 overflow-y-auto flex-1"
+            style="max-height: 60vh; min-height: 120px">
+            <span class="text-left">Nothing returned yet.</span>
+          </div>
+        </div>
+      </main>
+    </div>
+    <div
+      id="info-modal"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 hidden">
+      <div
+        class="modal-box bg-[#18181b] text-white rounded-xl p-6 max-w-3xl w-full relative overflow-y-auto max-h-[90vh]">
+        <button
+          id="info-modal-close"
+          class="btn btn-circle btn-ghost absolute right-2 top-2 text-xl">
+          ✕
+        </button>
+        <div id="info-modal-content"></div>
+      </div>
+    </div>
+
+    <script src="assets/js/fetchEndpoints.js"></script>
+    <script src="assets/js/formUtils.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <script src="assets/js/request.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const infoBtn = document.getElementById("info-btn");
+        const infoModal = document.getElementById("info-modal");
+        const infoModalClose = document.getElementById("info-modal-close");
+        const infoModalContent = document.getElementById("info-modal-content");
+
+        let modalHtml = `
+          <div class="flex h-full flex-col gap-5">
+            <section class="mb-2 flex flex-col items-center justify-center gap-2">
+              <div class="w-full text-center text-sm">
+                <p>
+                  You are using an unofficial tool. This is not affiliated with or
+                  endorsed by the original game developers.
+                </p>
+              </div>
+            </section>
+            <section>
+              <h3 class="text-lg font-semibold">Identity file</h3>
+              <p class="text-sm">
+                In your file Explorer, go into the folder
+                <code class="bg-gray-800 text-green-400 px-1 rounded">Android/data/com.kiloo.subwaysurf/</code>
+                which is your game directory.
+              </p>
+              <p class="text-sm">
+                From there you find the folder
+                <code class="bg-gray-800 text-green-400 px-1 rounded">/auth/subway-prod/</code>
+                which contains the
+                <code class="bg-gray-800 text-blue-400 px-1 rounded">identity</code> file.
+              </p>
+              <p class="text-sm">
+                Move the file to a more accessible location, such as 
+                <code class="bg-gray-800 text-green-400 px-1 rounded">Downloads</code>
+                so you can easily access it with the file picker.
+              </p>
+            </section>
+            <section>
+              <h3 class="text-lg font-semibold">Docs</h3>
+              <p class="text-sm">
+                If you want to have a bit more explainations about what each endpoint does
+                you can read about it here <a target="_blank" href="https://github.com/HerrErde/SubwaySurfers-Api">github.com/HerrErde/SubwaySurfers-Api</a>.
+              </p>
+            </section>
+            <div class="text-sm sm:text-base">
+              <ul class="my-3 flex flex-col gap-2 font-medium">
+                <li class="bg-base-200 border-base-content/10 rounded-xl border-2 p-3">
+                  This page runs locally. No data is shared anywhere, except your
+                  <code class="bg-gray-800 text-yellow-400 px-1 rounded">identityToken</code>,
+                  which is only used to make requests.
+                </li>
+              </ul>
+            </div>
+            <div class="grow"></div>
+            <section class="w-full text-center text-sm">
+              <a target="_blank" href="https://github.com/HerrErde/SubwaySurfers-Api-web"
+                >Repo</a
+              >
+              ·
+              <a target="_blank" href="https://github.com/HerrErde/SubwaySurfers-Api">
+                Api-Docs
+              </a>
+            </section>
+          </div>
+        `;
+
+        if (infoBtn && infoModal && infoModalClose && infoModalContent) {
+          infoBtn.addEventListener("click", function () {
+            infoModalContent.innerHTML = modalHtml;
+            infoModal.classList.remove("hidden");
+          });
+          infoModalClose.addEventListener("click", function () {
+            infoModal.classList.add("hidden");
+          });
+          infoModal.addEventListener("click", function (e) {
+            if (e.target === infoModal) {
+              infoModal.classList.add("hidden");
+            }
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
