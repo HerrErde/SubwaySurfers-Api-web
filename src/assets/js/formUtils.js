@@ -6,13 +6,13 @@ function buildFormHtml(ep) {
       let inputType = paramDef.type === "int" ? "number" : "text";
       formHTML += `
         <div>
-          <label class="block mb-1 text-sm">${paramDef.name}</label>
+          <label class="block mb-1 text-sm">${paramDef.name || key}</label>
           <input type="${inputType}" name="${key}" placeholder="${
         paramDef.example || ""
       }" class="w-full px-3 py-2 rounded-md bg-[#121212] text-white border border-[#333] focus:outline-none focus:ring-1 focus:ring-[#ee9e4f]" />
           ${
             paramDef.desc
-              ? `<label class="block mb-1 text-sm">${paramDef.name}</label>`
+              ? `<label class="font-poppins text-gray-300 mb-4 mt-2 text-sm">${paramDef.desc}</label>`
               : ""
           }
         </div>
@@ -46,11 +46,17 @@ function validateForm(ep, formElements) {
           return `Invalid regex for ${paramDef.name || key}`;
         }
         if (!re.test(val)) {
-          return `Field ${
-            paramDef.name || key
-          } does not match required format.\n ${
-            paramDef.example ? "Example: " + paramDef.example : ""
-          }`;
+          return `
+          <div class="text-sm text-red-400">
+            Field ${paramDef.name || key} does not match required format.
+            ${paramDef.example ? `<div>Example: ${paramDef.example}</div>` : ""}
+            ${
+              paramDef.errordesc
+                ? `<label class="font-poppins font-bold text-red-400 mt-2 block">${paramDef.errordesc}</label>`
+                : ""
+            }
+          </div>
+        `;
         }
       }
     }

@@ -89,7 +89,7 @@ function handleFormSubmit(ep, MsgType, RespType, url, opts, formElements, e) {
   }
   const errorMsg = validateForm(ep, formElements);
   if (errorMsg) {
-    if (errorsEl) errorsEl.innerText = errorMsg;
+    if (errorsEl) errorsEl.innerHTML = errorMsg;
     return;
   }
   const body = buildRequestBody(ep, formElements, e);
@@ -99,7 +99,7 @@ function handleFormSubmit(ep, MsgType, RespType, url, opts, formElements, e) {
     newDiv.id = "responseResult";
     newDiv.className = responseResultDiv.className;
     newDiv.innerHTML =
-      '<textarea id="response-output" rows="36" class="w-full mt-4 bg-[#121212] text-white border border-[#333] rounded p-2 border-0"></textarea>';
+      '<textarea id="response-output" rows="40" readonly class="w-full mt-4 bg-[#121212] text-white border border-[#333] rounded p-2 border-0 overflow-y-auto custom-scrollbar"></textarea>';
     responseResultDiv.replaceWith(newDiv);
   }
   function setTextIfExists(id, value) {

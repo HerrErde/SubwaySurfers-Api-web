@@ -5,21 +5,24 @@ endpointsList = [
     params: {
       name: {
         name: "name",
-        regex: "^[a-zA-Z]+$",
+        regex: "^[a-zA-Z]{2,15}$",
         type: "string",
-        example: "StylingeDino"
+        example: "StylingeDino",
+        desc: "No spaces and 2-15 only alphabet letters"
       },
       level: {
         name: "level",
-        regex: "^[1-100]+$",
+        regex: "^(0|100|[1-9][0-9]?)$",
         type: "int",
-        example: "1"
+        example: "1",
+        desc: "The limit is 0-100"
       },
       highscore: {
         name: "highscore",
-        regex: "^[1-210483646]+$",
+        regex: "^(0|[1-9][0-9]{0,8})$",
         type: "int",
-        example: "100"
+        example: "100",
+        desc: "The limit is 0-999999999"
       }
     },
     request: "UpdatePlayerRequest",
@@ -37,7 +40,6 @@ endpointsList = [
   {
     name: "GetPlayerByTag",
     endpoint: "/rpc/player.ext.v1.PrivateService/GetPlayerByTag",
-    desc: "",
     params: {
       player: {
         name: "playertag",
@@ -65,7 +67,6 @@ endpointsList = [
     response: "PlayerResponse",
     type: "rpc"
   },
-
   {
     name: "GetFriends",
     endpoint: "/rpc/friends.ext.v1.PrivateService/GetFriends",
