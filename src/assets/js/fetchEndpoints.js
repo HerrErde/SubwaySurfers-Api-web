@@ -108,12 +108,8 @@ let endpoints = [];
 let endpointData = [];
 let identityToken = null;
 
-fetch("assets/data/format.json")
-  .then((r) => r.json())
-  .then((data) => {
-    endpointData = data;
-    renderSidebar();
-  });
+endpointData = endpointsList;
+renderSidebar();
 
 window.addEventListener("DOMContentLoaded", function () {
   const sidebarIdentityInput = document.getElementById("identity-file");
