@@ -153,29 +153,14 @@
           class="btn btn-circle btn-ghost absolute right-2 top-2 text-xl">
           ✕
         </button>
-        <div id="info-modal-content"></div>
-      </div>
-    </div>
-
-    <script src="assets/js/format.js"></script>
-    <script src="assets/js/ui.js"></script>
-    <script src="assets/js/fetchEndpoints.js"></script>
-    <script src="assets/js/formUtils.js"></script>
-    <script src="assets/js/request.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const infoBtn = document.getElementById("info-btn");
-        const infoModal = document.getElementById("info-modal");
-        const infoModalClose = document.getElementById("info-modal-close");
-        const infoModalContent = document.getElementById("info-modal-content");
-
-        let modalHtml = `
+        <div id="info-modal-content">
           <div class="flex h-full flex-col gap-5">
-            <section class="mb-2 flex flex-col items-center justify-center gap-2">
+            <section
+              class="mb-2 flex flex-col items-center justify-center gap-2">
               <div class="w-full text-center text-sm">
                 <p>
-                  You are using an unofficial tool. This is not affiliated with or
-                  endorsed by the original game developers.
+                  You are using an unofficial tool. This is not affiliated with
+                  or endorsed by the original game developers.
                 </p>
               </div>
             </section>
@@ -183,64 +168,131 @@
               <h3 class="text-lg font-semibold">Identity file</h3>
               <p class="text-sm">
                 In your file Explorer, go into the folder
-                <code class="bg-gray-800 text-green-400 px-1 rounded">Android/data/com.kiloo.subwaysurf/</code>
+                <code class="bg-gray-800 text-green-400 px-1 rounded"
+                  >Android/data/com.kiloo.subwaysurf/</code
+                >
                 which is your game directory.
               </p>
               <p class="text-sm">
                 From there you find the folder
-                <code class="bg-gray-800 text-green-400 px-1 rounded">/auth/subway-prod/</code>
+                <code class="bg-gray-800 text-green-400 px-1 rounded"
+                  >/auth/subway-prod/</code
+                >
                 which contains the
-                <code class="bg-gray-800 text-blue-400 px-1 rounded">identity</code> file.
+                <code class="bg-gray-800 text-blue-400 px-1 rounded"
+                  >identity</code
+                >
+                file.
               </p>
               <p class="text-sm">
-                Move the file to a more accessible location, such as 
-                <code class="bg-gray-800 text-green-400 px-1 rounded">Downloads</code>
+                Move the file to a more accessible location, such as
+                <code class="bg-gray-800 text-green-400 px-1 rounded"
+                  >Downloads</code
+                >
                 so you can easily access it with the file picker.
               </p>
             </section>
             <section>
               <h3 class="text-lg font-semibold">Docs</h3>
               <p class="text-sm">
-                If you want to have a bit more explainations about what each endpoint does
-                you can read about it here <a target="_blank" href="https://github.com/HerrErde/SubwaySurfers-Api">github.com/HerrErde/SubwaySurfers-Api</a>.
+                If you want to have a bit more explainations about what each
+                endpoint does you can read about it here
+                <a
+                  target="_blank"
+                  href="https://github.com/HerrErde/SubwaySurfers-Api"
+                  >github.com/HerrErde/SubwaySurfers-Api</a
+                >.
               </p>
             </section>
             <div class="text-sm sm:text-base">
               <ul class="my-3 flex flex-col gap-2 font-medium">
-                <li class="bg-base-200 border-base-content/10 rounded-xl border-2 p-3">
-                  This page runs locally. No data is shared anywhere, except your
-                  <code class="bg-gray-800 text-yellow-400 px-1 rounded">identityToken</code>,
-                  which is only used to make requests.
+                <li
+                  class="bg-base-200 border-base-content/10 rounded-xl border-2 p-3">
+                  This page runs locally.<br />
+                  No data is shared anywhere, except your
+                  <code class="bg-gray-800 text-yellow-400 px-1 rounded"
+                    >identityToken</code
+                  >, which is only used to make requests.
                 </li>
               </ul>
             </div>
+            <section class="w-full text-center text-sm">
+              <label class="inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  id="disableLimitsToggle"
+                  class="sr-only peer" />
+                <div
+                  class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+                <span
+                  class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300"
+                  >Disable Limits</span
+                >
+              </label>
+            </section>
             <div class="grow"></div>
             <section class="w-full text-center text-sm">
-              <a target="_blank" href="https://github.com/HerrErde/SubwaySurfers-Api-web"
+              <a
+                target="_blank"
+                href="https://github.com/HerrErde/SubwaySurfers-Api-web"
                 >Repo</a
               >
               ·
-              <a target="_blank" href="https://github.com/HerrErde/SubwaySurfers-Api">
+              <a
+                target="_blank"
+                href="https://github.com/HerrErde/SubwaySurfers-Api">
                 Api-Docs
               </a>
             </section>
           </div>
-        `;
+          <script>
+            let limitsDisabled =
+              localStorage.getItem("limitsDisabled") === "true";
 
-        if (infoBtn && infoModal && infoModalClose && infoModalContent) {
-          infoBtn.addEventListener("click", function () {
-            infoModalContent.innerHTML = modalHtml;
-            infoModal.classList.remove("hidden");
-          });
-          infoModalClose.addEventListener("click", function () {
-            infoModal.classList.add("hidden");
-          });
-          infoModal.addEventListener("click", function (e) {
-            if (e.target === infoModal) {
-              infoModal.classList.add("hidden");
+            const toggleCheckbox = document.getElementById(
+              "disableLimitsToggle"
+            );
+
+            toggleCheckbox.checked = limitsDisabled;
+
+            if (localStorage.getItem("limitsDisabled") === null) {
+              localStorage.setItem("limitsDisabled", limitsDisabled);
             }
-          });
-        }
+
+            toggleCheckbox.addEventListener("change", () => {
+              limitsDisabled = toggleCheckbox.checked;
+              localStorage.setItem("limitsDisabled", limitsDisabled);
+              console.log("Limits disabled:", limitsDisabled);
+            });
+          </script>
+        </div>
+      </div>
+    </div>
+    <script src="assets/js/autofillUtils.js"></script>
+    <script src="assets/js/metadataUtils.js"></script>
+    <script src="assets/js/format.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <script src="assets/js/fetchEndpoints.js"></script>
+    <script src="assets/js/formUtils.js"></script>
+    <script src="assets/js/request.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const infoBtn = document.getElementById("info-btn");
+        const infoModal = document.getElementById("info-modal");
+        const infoModalClose = document.getElementById("info-modal-close");
+
+        infoBtn.addEventListener("click", () =>
+          infoModal.classList.remove("hidden")
+        );
+        infoModalClose.addEventListener("click", () =>
+          infoModal.classList.add("hidden")
+        );
+        infoModal.addEventListener("click", (e) => {
+          if (e.target === infoModal) infoModal.classList.add("hidden");
+        });
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") infoModal.classList.add("hidden");
+        });
       });
     </script>
   </body>

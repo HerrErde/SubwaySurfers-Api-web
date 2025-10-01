@@ -15,15 +15,22 @@ function renderSidebar() {
       div.onclick = () => {
         document
           .querySelectorAll("#endpointList .sidebar-link")
-          .forEach((el) => {
-            el.classList.remove("sb-selected");
-          });
+          .forEach((el) => el.classList.remove("sb-selected"));
         div.classList.add("sb-selected");
         document.getElementById("endpointTitle").textContent = ep.name;
         document.getElementById("endpointPath").textContent = ep.endpoint;
         document.getElementById("endpointDesc").textContent = ep.desc;
+
+        // Clear previous response
+        const responseResultDiv = document.getElementById("responseResult");
+        if (responseResultDiv) {
+          responseResultDiv.innerHTML =
+            '<span class="text-left">Nothing returned yet.</span>';
+        }
+
         renderForm(ep);
       };
+
       list.appendChild(div);
     });
   }
@@ -41,24 +48,26 @@ function renderSidebar() {
       a.className =
         "flex font-semibold justify-between font-poppins items-center gap-1";
       div.appendChild(a);
+
       div.onclick = () => {
         document
           .querySelectorAll("#mobileEndpointList .sidebar-link")
-          .forEach((el) => {
-            el.classList.remove("sb-selected");
-          });
+          .forEach((el) => el.classList.remove("sb-selected"));
+
         div.classList.add("sb-selected");
         document.getElementById("endpointTitle").textContent = ep.name;
         document.getElementById("endpointPath").textContent = ep.endpoint;
         document.getElementById("endpointDesc").textContent = ep.desc;
-        renderForm(ep);
-        const mobileSidebar = document.getElementById("mobileSidebar");
-        const overlay = document.getElementById("overlay");
-        if (mobileSidebar && overlay) {
-          mobileSidebar.classList.add("-translate-x-full");
-          overlay.classList.add("hidden");
+
+        const responseResultDiv = document.getElementById("responseResult");
+        if (responseResultDiv) {
+          responseResultDiv.innerHTML =
+            '<span class="text-left">Nothing returned yet.</span>';
         }
+
+        renderForm(ep);
       };
+
       mobileList.appendChild(div);
     });
   }
@@ -87,25 +96,25 @@ function handleFormSubmit(ep, MsgType, RespType, url, opts, formElements, e) {
     }
     return;
   }
+
   const errorMsg = validateForm(ep, formElements);
   if (errorMsg) {
     if (errorsEl) errorsEl.innerHTML = errorMsg;
     return;
   }
+
   const body = buildRequestBody(ep, formElements, e);
+
   const responseResultDiv = document.getElementById("responseResult");
   if (responseResultDiv) {
     const newDiv = document.createElement("div");
     newDiv.id = "responseResult";
     newDiv.className = responseResultDiv.className;
     newDiv.innerHTML =
-      '<textarea id="response-output" rows="40" readonly class="w-full mt-4 bg-[#121212] text-white border border-[#333] rounded p-2 border-0 overflow-y-auto custom-scrollbar"></textarea>';
+      '<textarea id="response-output" rows="40" readonly class="w-full mt-4 bg-[#121212] text-white border border-[#333] rounded p-2 overflow-y-auto custom-scrollbar"></textarea>';
     responseResultDiv.replaceWith(newDiv);
   }
-  function setTextIfExists(id, value) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = value;
-  }
+
   sendRequest(url, identityToken, MsgType, RespType, body, opts);
 }
 

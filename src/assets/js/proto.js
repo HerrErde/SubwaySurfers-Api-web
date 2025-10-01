@@ -4619,6 +4619,7 @@ proto.player.ext.v1.GetWalletResponse.WalletData.prototype.toObject = function(o
  */
 proto.player.ext.v1.GetWalletResponse.WalletData.toObject = function(includeInstance, msg) {
   var f, obj = {
+itemsMap: (f = msg.getItemsMap()) ? f.toObject(includeInstance, undefined) : [],
 walletLastSaveAt: (f = msg.getWalletLastSaveAt()) && proto.player.ext.v1.Time.toObject(includeInstance, f)
   };
 
@@ -4656,6 +4657,12 @@ proto.player.ext.v1.GetWalletResponse.WalletData.deserializeBinaryFromReader = f
     }
     var field = reader.getFieldNumber();
     switch (field) {
+    case 1:
+      var value = msg.getItemsMap();
+      reader.readMessage(value, function(message, reader) {
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readUint64, null, "", 0);
+         });
+      break;
     case 2:
       var value = new proto.player.ext.v1.Time;
       reader.readMessage(value,proto.player.ext.v1.Time.deserializeBinaryFromReader);
@@ -4690,6 +4697,10 @@ proto.player.ext.v1.GetWalletResponse.WalletData.prototype.serializeBinary = fun
  */
 proto.player.ext.v1.GetWalletResponse.WalletData.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getItemsMap(true);
+  if (f && f.getLength() > 0) {
+    f.serializeBinary(1, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeUint64);
+  }
   f = message.getWalletLastSaveAt();
   if (f != null) {
     writer.writeMessage(
@@ -4698,6 +4709,29 @@ proto.player.ext.v1.GetWalletResponse.WalletData.serializeBinaryToWriter = funct
       proto.player.ext.v1.Time.serializeBinaryToWriter
     );
   }
+};
+
+
+/**
+ * map<string, uint64> items = 1;
+ * @param {boolean=} opt_noLazyCreate Do not create the map if
+ * empty, instead returning `undefined`
+ * @return {!jspb.Map<string,number>}
+ */
+proto.player.ext.v1.GetWalletResponse.WalletData.prototype.getItemsMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<string,number>} */ (
+      jspb.Message.getMapField(this, 1, opt_noLazyCreate,
+      null));
+};
+
+
+/**
+ * Clears values from the map. The map will be non-null.
+ * @return {!proto.player.ext.v1.GetWalletResponse.WalletData} returns this
+ */
+proto.player.ext.v1.GetWalletResponse.WalletData.prototype.clearItemsMap = function() {
+  this.getItemsMap().clear();
+  return this;
 };
 
 

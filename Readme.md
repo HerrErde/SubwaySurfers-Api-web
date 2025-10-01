@@ -17,7 +17,8 @@ This project provides a frontend that allows you to send requests using your own
 Generate `proto.js`
 
 ```bash
-npm install -g protoc-gen-js
+npm install -g protoc-gen-js google-protobuf
 
-protoc -I=. player.proto --js_out=library=proto,import_style=closure:.
+protoc -I=. --js_out=library=proto,import_style=closure:. player.proto
+
 ```
