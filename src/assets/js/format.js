@@ -39,7 +39,7 @@ endpointsList = [
           },
           selected_character: {
             name: "character",
-            regex: "^[^s]+.[^s]+$",
+            regex: "^[^.]+.[^.]+$",
             type: "string",
             example: "jake.default",
             desc: "The selected character with name and outfit (jake.default)"
