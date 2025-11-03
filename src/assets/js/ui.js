@@ -111,7 +111,7 @@ function handleFormSubmit(ep, MsgType, RespType, url, opts, formElements, e) {
     newDiv.id = "responseResult";
     newDiv.className = responseResultDiv.className;
     newDiv.innerHTML =
-      '<textarea id="response-output" rows="40" readonly class="w-full mt-4 bg-[#121212] text-white border border-[#333] rounded p-2 overflow-y-auto custom-scrollbar"></textarea>';
+      '<textarea id="response-output" rows="40" readonly class="w-full mt-2 bg-[#121212] text-white border border-[#333] rounded p-2 overflow-y-auto custom-scrollbar"></textarea>';
     responseResultDiv.replaceWith(newDiv);
   }
 

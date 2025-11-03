@@ -6,8 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Subway Surfers Playground</title>
     <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
-      rel="stylesheet" />
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer" />
     <link href="assets/css/style.css" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/google-protobuf/google-protobuf.js"></script>
@@ -39,6 +42,7 @@
       <div class="text-left font-poppins text-lg mb-5 text-[#ffcc99] p-4">
         Endpoints
       </div>
+      <p id="token-expire-mobile" class="font-poppins mb-2 text-center"></p>
       <div class="flex items-center gap-2 mb-2 p-4">
         <button
           id="identity-upload-btn-mobile"
@@ -92,9 +96,10 @@
     <div class="block lg:flex w-full">
       <div
         class="sidebar hidden lg:flex w-[16.7vw] bg-[#09090b] h-screen flex-col items-center overflow-y-auto custom-scrollbar">
-        <div class="text-left font-poppins text-lg mb-5 text-[#ffcc99]">
+        <div class="text-left font-poppins text-lg mb-2 text-[#ffcc99]">
           Endpoints
         </div>
+        <p id="token-expire" class="font-poppins mb-2 text-center"></p>
         <div class="flex items-center gap-2 mb-2">
           <button
             id="identity-upload-btn"
@@ -147,11 +152,24 @@
       id="info-modal"
       class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 hidden">
       <div
-        class="modal-box bg-[#18181b] text-white rounded-xl p-6 max-w-3xl w-full relative overflow-y-auto max-h-[90vh]">
+        class="modal-box bg-[#18181b] text-white rounded-xl p-9 max-w-3xl w-full relative overflow-y-auto max-h-[90vh] overflow-y-hidden">
         <button
           id="info-modal-close"
-          class="btn btn-circle btn-ghost absolute right-2 top-2 text-xl">
-          ✕
+          type="button"
+          class="rounded-full p-2 inline-flex items-center justify-center text-gray-400 bg-transparent hover:text-white hover:bg-gray-700 transition-colors duration-200 btn btn-circle btn-ghost absolute right-2 top-2 text-xl">
+          <svg
+            class="h-6 w-6"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12" />
+          </svg>
         </button>
         <div id="info-modal-content">
           <div class="flex h-full flex-col gap-5">
@@ -159,8 +177,8 @@
               class="mb-2 flex flex-col items-center justify-center gap-2">
               <div class="w-full text-center text-sm">
                 <p>
-                  You are using an unofficial tool. This is not affiliated with
-                  or endorsed by the original game developers.
+                  You are using an unofficial tool. <br />This is not affiliated
+                  with or endorsed by the original game developers.
                 </p>
               </div>
             </section>
@@ -208,34 +226,97 @@
               <ul class="my-3 flex flex-col gap-2 font-medium">
                 <li
                   class="bg-base-200 border-base-content/10 rounded-xl border-2 p-3">
-                  This page runs locally.<br />
-                  No data is shared anywhere, except your
+                  This page runs entirely in your browser.<br />
+                  Your
                   <code class="bg-gray-800 text-yellow-400 px-1 rounded"
                     >identityToken</code
-                  >, which is only used to make requests.
+                  >
+                  is used to authenticate requests to the API and is
+                  <strong>never shared</strong> with anyone else.<br />
+                  The service
+                  <code class="bg-gray-800 text-orange-400 px-1 rounded"
+                    >corsproxy.io</code
+                  >
+                  is used as a CORS proxy to allow making requests to the API
+                  that would otherwise be blocked by browser security
+                  policies.<br />
+                  The CORS proxy simply forwards your requests and responses; it
+                  does <strong>not log or store your data</strong>.<br />
+                  You can change the CORS proxy URL below if you prefer to use a
+                  different proxy service. (it has to work with POST
+                  requests)<br />
                 </li>
               </ul>
             </div>
-            <section class="w-full text-center text-sm">
-              <label class="inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  id="disableLimitsToggle"
-                  class="sr-only peer" />
-                <div
-                  class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+
+            <details
+              class="w-full max-w-lg mx-auto bg-[#1a1a1a] rounded-xl p-6 text-sm text-gray-300 border border-gray-600 overflow-hidden transition-all duration-300">
+              <summary
+                class="cursor-pointer select-none font-semibold text-lg text-white mb-2 list-none flex justify-between items-center">
+                Settings
                 <span
-                  class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300"
-                  >Disable Limits</span
-                >
-              </label>
-            </section>
+                  class="text-gray-400 transition-transform duration-300 group-open:rotate-180"
+                  ><i class="fa-solid fa-chevron-down"></i
+                ></span>
+              </summary>
+
+              <section class="w-full text-center text-sm">
+                <label class="inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    id="disableLimitsToggle"
+                    class="sr-only peer" />
+                  <div
+                    class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+                  <span
+                    class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300"
+                    >Disable Limits</span
+                  >
+                </label>
+              </section>
+
+              <section class="w-full text-center text-sm">
+                <div class="relative w-full max-w-md mx-auto text-left">
+                  <label class="block">
+                    <span class="block text-gray-300 font-semibold mb-1"
+                      >CORS Proxy</span
+                    >
+
+                    <div class="relative">
+                      <span
+                        class="absolute top-1/2 left-3 -translate-y-1/2 text-white z-10 pointer-events-none">
+                        <i class="fa-regular fa-cloud"></i>
+                      </span>
+
+                      <input
+                        id="corsProxyInput"
+                        type="text"
+                        placeholder="https://corsproxy.io/?url="
+                        value="https://corsproxy.io/?url="
+                        class="peer h-10 w-full rounded-md bg-[#121212] pl-10 pr-20 font-thin text-white outline-none drop-shadow-sm transition-all duration-200 ease-in-out focus:bg-gray-800 focus:drop-shadow-lg" />
+
+                      <button
+                        id="corsProxySave"
+                        class="absolute top-0 right-0 h-full w-16 rounded-r-md bg-indigo-600 text-xs font-semibold text-white hover:bg-indigo-800 transition-colors duration-200">
+                        Save
+                      </button>
+
+                      <span
+                        class="absolute left-0 right-16 mt-1 text-xs font-semibold text-gray-500 opacity-0 peer-focus:opacity-100 transition-opacity duration-200 block">
+                        Url format: https://corsproxy.io/?url=REQUEST_URL
+                      </span>
+                    </div>
+                  </label>
+                </div>
+              </section>
+            </details>
+
             <div class="grow"></div>
             <section class="w-full text-center text-sm">
               <a
                 target="_blank"
                 href="https://github.com/HerrErde/SubwaySurfers-Api-web"
-                >Repo</a
+                >Source</a
               >
               ·
               <a
@@ -263,6 +344,20 @@
               limitsDisabled = toggleCheckbox.checked;
               localStorage.setItem("limitsDisabled", limitsDisabled);
               console.log("Limits disabled:", limitsDisabled);
+            });
+          </script>
+          <script>
+            const input = document.getElementById("corsProxyInput");
+            const saveBtn = document.getElementById("corsProxySave");
+
+            const savedProxy =
+              localStorage.getItem("corsProxy") || "https://corsproxy.io/?url=";
+            input.value = savedProxy;
+
+            saveBtn.addEventListener("click", () => {
+              const newValue = input.value.trim();
+              localStorage.setItem("corsProxy", newValue);
+              console.log("Saved CORS Proxy:", newValue);
             });
           </script>
         </div>

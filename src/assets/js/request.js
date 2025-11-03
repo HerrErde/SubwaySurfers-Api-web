@@ -103,7 +103,9 @@ async function sendRequest(
   }
 
   try {
-    const res = await fetch("https://corsproxy.io/?url=" + url, {
+    let corsProxy =
+      localStorage.getItem("corsProxy") || "https://corsproxy.io/?url=";
+    const res = await fetch(corsProxy + url, {
       method: "POST",
       headers,
       body: requestBody
