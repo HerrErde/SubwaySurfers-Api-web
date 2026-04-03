@@ -1,17 +1,27 @@
 - [x] Endpoints
+  - [x] UpdatePlayer
+  - [x] CreatePlayer
   - [x] GetPlayer
   - [x] GetPlayerByTag
   - [x] GetPlayerById
+  - [x] GetWallet
+  - [x] Match
   - [x] GetFriends
   - [x] GetInvites
   - [x] GetFriendsAndInvites
   - [x] SendInvite
+  - [x] AcceptInvite
+  - [x] CancelInvite
+  - [x] DeclineInvite
+  - [x] RemoveFriend
   - [x] GetRelationship
-  - [x] GetWallet
-  - [x] Match
   - [x] InitializeEnergy
   - [x] GetEnergies
   - [x] AddEnergy
   - [x] UseEnergy
-  - [ ] CreatePlayer
-  - [ ] UpdatePlayer
+  - [x] GetTournamentInfo
+  - [x] JoinTournament
+  - [x] SubmitScore
+  - [x] GetScores
+  - [x] GetResults
+  - [x] ClaimRewards

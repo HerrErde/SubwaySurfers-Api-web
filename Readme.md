@@ -11,14 +11,3 @@ This project provides a frontend that allows you to send requests using your own
 - Local-only: no data is sent anywhere except to the official game servers
 
 ---
-
-## Development
-
-Generate `proto.js`
-
-```bash
-npm install -g protoc-gen-js google-protobuf
-
-protoc -I=. --js_out=library=proto,import_style=closure:. player.proto
-
-```
