@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "generate": "npx buf generate protos --template buf.gen.yaml",
+    "generate:ss": "npx buf generate protos/ss --template buf.gen.ss.yaml",
+    "generate:ssc": "npx buf generate protos/ssc --template buf.gen.ssc.yaml",
+    "generate": "npm run generate:ss && npm run generate:ssc",
     "predev": "npm run generate",
     "prebuild": "npm run generate",
     "dev": "vite",

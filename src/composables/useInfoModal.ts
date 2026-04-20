@@ -21,6 +21,6 @@ export function useInfoModal() {
     corsProxyInput,
     limitsDisabled,
     saveCorsProxy,
-    toggleLimits
+    toggleLimits,
   };
 }

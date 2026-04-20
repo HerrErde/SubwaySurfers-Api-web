@@ -113,11 +113,11 @@ message SubmitScoreRequest {
   PoolInput pool = 3;
 }
 
+message SubmitScoreResponse {}
+
 message GetScoresRequest {
   TournamentInput tournament = 1;
 }
-
-message SubmitScoreResponse {}
 
 message GetScoresResponse {
   TournamentOutput tournament = 1;

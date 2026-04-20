@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { toRef } from "vue";
+import { toRef, computed } from "vue";
 import { useRequestForm } from "../composables/useRequestForm";
+import type { Endpoint } from "../stores/app";
 
 const props = defineProps<{
-  endpoint: any;
+  endpoint: Endpoint | null;
 }>();
 
 const emit = defineEmits<{
@@ -26,6 +27,10 @@ const {
   handleAutofill,
   onAddMetadata
 } = useRequestForm(toRef(props, "endpoint"));
+
+const params = computed(() => {
+  return props.endpoint?.pathParams ?? props.endpoint?.bodyParams ?? {};
+});
 
 const handleFormSubmit = async () => {
   await handleSubmit(
@@ -55,7 +60,7 @@ const handleFormSubmit = async () => {
     </div>
 
     <form @submit.prevent="handleFormSubmit" class="space-y-4">
-      <div v-for="(param, key) in endpoint.params" :key="key">
+      <div v-for="(param, key) in params" :key="key">
         <div v-if="param.type === 'list' && param.metadata" class="space-y-3">
           <label class="block text-sm font-medium text-gray-300">{{
             param.name
@@ -98,12 +103,12 @@ const handleFormSubmit = async () => {
               </div>
 
               <select
-                v-if="getMetadataDef(entry.key).options"
+                v-if="getMetadataDef(entry.key)?.options"
                 v-model="entry.value"
                 class="rounded-md bg-[#121212] text-white border border-[#333] px-2 py-1 text-left metadata-input-select"
                 style="width: 350px">
                 <option
-                  v-for="opt in getMetadataDef(entry.key).options"
+                  v-for="opt in getMetadataDef(entry.key)?.options"
                   :key="opt"
                   :value="opt">
                   {{ opt }}
@@ -113,15 +118,15 @@ const handleFormSubmit = async () => {
                 v-else
                 v-model="entry.value"
                 :type="
-                  getMetadataDef(entry.key).type === 'int' ? 'number' : 'text'
+                  getMetadataDef(entry.key)?.type === 'int' ? 'number' : 'text'
                 "
-                :placeholder="getMetadataDef(entry.key).example || ''"
+                :placeholder="getMetadataDef(entry.key)?.example || ''"
                 class="rounded-md bg-[#121212] text-white border border-[#333] px-2 py-1 text-left metadata-input-select"
                 style="width: 350px" />
               <p
-                v-if="getMetadataDef(entry.key).desc"
+                v-if="getMetadataDef(entry.key)?.desc"
                 class="text-xs text-gray-500">
-                {{ getMetadataDef(entry.key).desc }}
+                {{ getMetadataDef(entry.key)?.desc }}
               </p>
             </div>
           </div>

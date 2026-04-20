@@ -17,6 +17,6 @@ export function useClipboard() {
 
   return {
     copyText,
-    onCopy
+    onCopy,
   };
 }

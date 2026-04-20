@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { endpointsList } from "../endpoints";
+import { computed, ref } from "vue";
 import { useSidebar } from "../composables/useSidebar";
+import ApiSwitcher from "./ApiSwitcher.vue";
 import { useAppStore } from "../stores/app";
+import type { Endpoint } from "../stores/app";
 
 const props = defineProps<{
-  selectedEndpoint: any;
+  selectedEndpoint: Endpoint | null;
 }>();
 
 const emit = defineEmits<{
-  (e: "select-endpoint", endpoint: any): void;
+  (e: "select-endpoint", endpoint: Endpoint): void;
 }>();
 
 const {
@@ -19,15 +20,38 @@ const {
   hasIdentity,
   onFileChange,
   triggerUpload,
-  removeIdentity
+  removeIdentity,
+  parseIdentityJson
 } = useSidebar();
 const store = useAppStore();
 void fileInput;
 
+const showPaste = ref(false);
+const pasteText = ref("");
+
+const openPaste = () => {
+  showPaste.value = true;
+};
+
+const cancelPaste = () => {
+  pasteText.value = "";
+  showPaste.value = false;
+};
+
+const submitPaste = () => {
+  if (!pasteText.value) return;
+  const ok = parseIdentityJson(pasteText.value);
+  if (ok) {
+    pasteText.value = "";
+    showPaste.value = false;
+  }
+};
+
 const filteredEndpoints = computed(() => {
-  if (!searchQuery.value) return endpointsList;
+  const endpoints = store.activeEndpoints;
+  if (!searchQuery.value) return endpoints;
   const query = searchQuery.value.toLowerCase();
-  return endpointsList.filter(
+  return endpoints.filter(
     (ep) =>
       ep.name.toLowerCase().includes(query) ||
       ep.endpoint.toLowerCase().includes(query)
@@ -48,11 +72,59 @@ const filteredEndpoints = computed(() => {
         :title="
           store.identityExpiry ? new Date(store.identityExpiry).toString() : ''
         "
-        class="font-poppins mb-2 text-center text-xs text-gray-400 hidden lg:block">
+        class="font-poppins mb-2 text-center text-xs text-gray-400 block">
         Expires:<br />{{ expiryDisplay }}
       </p>
 
       <div class="flex items-center gap-2 mb-2">
+        <button
+          type="button"
+          @click="openPaste"
+          class="cursor-pointer hover:bg-[#2b2b2b] duration-100 p-1 px-2 rounded-[6px] bg-transparent text-white text-xs"
+          title="Paste identity JSON">
+          <i class="fa fa-clipboard" aria-hidden="true"></i>
+        </button>
+
+        <teleport to="body">
+          <div
+            v-if="showPaste"
+            class="fixed inset-0 z-50 flex items-center justify-center">
+            <div
+              class="absolute inset-0 bg-black/70"
+              @click="cancelPaste"></div>
+            <div
+              class="relative bg-[#0b0b0b] rounded-md p-4 w-full max-w-lg z-50 mx-4 sm:mx-0">
+              <div class="flex justify-between items-center mb-3">
+                <div class="text-sm font-semibold text-white">
+                  Paste Identity JSON
+                </div>
+                <button
+                  @click="cancelPaste"
+                  class="text-white text-lg leading-none cursor-pointer">
+                  &times;
+                </button>
+              </div>
+              <textarea
+                v-model="pasteText"
+                rows="8"
+                placeholder="Paste identity JSON here"
+                class="w-full px-3 py-2 text-sm rounded-md bg-[#111] text-white resize-y max-h-80 overflow-auto"></textarea>
+              <div class="flex justify-end gap-2 mt-3">
+                <button
+                  @click="submitPaste"
+                  class="p-2 px-4 bg-[#3b82f6] rounded text-white text-sm cursor-pointer">
+                  Submit
+                </button>
+                <button
+                  @click="cancelPaste"
+                  class="p-2 px-4 bg-[#444] rounded text-white text-sm cursor-pointer">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </teleport>
+
         <button
           @click="triggerUpload"
           type="button"
@@ -79,6 +151,7 @@ const filteredEndpoints = computed(() => {
       </div>
 
       <div class="w-full border-t border-[#222] my-3"></div>
+      <ApiSwitcher />
       <div class="w-full">
         <div class="px-4 mb-4 w-full lg:hidden">
           <input

@@ -31,6 +31,6 @@ export function useMainPanel() {
     isResponseReady,
     onResponse,
     clearResponse,
-    setTab
+    setTab,
   };
 }

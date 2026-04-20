@@ -20,6 +20,9 @@ service PrivateService {
 message SendInviteRequest {
   string userId = 1;
 }
+message SendInviteResponse {
+  Invite invite = 1;
+}
 
 message CancelInviteRequest {
   string inviteId = 1;
@@ -45,10 +48,6 @@ message AcceptInviteResponse {}
 
 message GetRelationshipRequest {
   string userId = 1;
-}
-
-message SendInviteResponse {
-  Invite invite = 1;
 }
 
 message Friend {

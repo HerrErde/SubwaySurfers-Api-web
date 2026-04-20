@@ -1,12 +1,17 @@
 import { ref } from "vue";
+import type { Endpoint } from "../stores/app";
 
 export function useAppNavigation() {
   const showMobileSidebar = ref(false);
   const showInfoModal = ref(false);
-  const selectedEndpoint = ref<any>(null);
+  const selectedEndpoint = ref<Endpoint | null>(null);
 
   const toggleMobileSidebar = () => {
     showMobileSidebar.value = !showMobileSidebar.value;
+  };
+
+  const closeMobileSidebar = () => {
+    showMobileSidebar.value = false;
   };
 
   const selectEndpoint = (ep: any) => {
@@ -29,6 +34,7 @@ export function useAppNavigation() {
     toggleMobileSidebar,
     selectEndpoint,
     openInfo,
-    closeInfo
+    closeInfo,
+    closeMobileSidebar,
   };
 }

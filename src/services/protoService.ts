@@ -1,7 +1,13 @@
+import type { Message } from "@bufbuild/protobuf";
+
 declare global {
   interface Window {
-    proto?: any;
-    jspb?: any;
+    proto?: Record<string, any>;
+    jspb?: {
+      Message: typeof Message;
+      BinaryReader: any;
+      BinaryWriter: any;
+    };
   }
 }
 
@@ -13,13 +19,15 @@ export function initProtoNamespace(): Promise<void> {
         return;
       }
 
+      const jspb = window.jspb!;
+
       if (!window.proto) window.proto = {};
       if (!window.proto.google) window.proto.google = {};
       if (!window.proto.google.protobuf) window.proto.google.protobuf = {};
       if (!window.proto.google.rpc) window.proto.google.rpc = {};
 
       // Define Timestamp class
-      class Timestamp extends window.jspb.Message {
+      class Timestamp extends jspb.Message {
         seconds_: number;
         nanos_: number;
 
@@ -33,7 +41,7 @@ export function initProtoNamespace(): Promise<void> {
           const msg = new Timestamp();
           Timestamp.deserializeBinaryFromReader(
             msg,
-            new window.jspb.BinaryReader(bytes)
+            new jspb.BinaryReader(bytes)
           );
           return msg;
         }
@@ -71,7 +79,7 @@ export function initProtoNamespace(): Promise<void> {
         }
 
         serializeBinary(): Uint8Array {
-          const writer = new window.jspb.BinaryWriter();
+          const writer = new jspb.BinaryWriter();
           Timestamp.serializeBinaryToWriter(this, writer);
           return writer.getResultBuffer();
         }
@@ -95,7 +103,7 @@ export function initProtoNamespace(): Promise<void> {
       }
 
       // Define FieldMask class
-      class FieldMask extends window.jspb.Message {
+      class FieldMask extends jspb.Message {
         paths_: string[];
 
         constructor(opt_data?: { paths_?: string[] }) {
@@ -107,7 +115,7 @@ export function initProtoNamespace(): Promise<void> {
           const msg = new FieldMask();
           FieldMask.deserializeBinaryFromReader(
             msg,
-            new window.jspb.BinaryReader(bytes)
+            new jspb.BinaryReader(bytes)
           );
           return msg;
         }
@@ -140,7 +148,7 @@ export function initProtoNamespace(): Promise<void> {
         }
 
         serializeBinary(): Uint8Array {
-          const writer = new window.jspb.BinaryWriter();
+          const writer = new jspb.BinaryWriter();
           FieldMask.serializeBinaryToWriter(this, writer);
           return writer.getResultBuffer();
         }

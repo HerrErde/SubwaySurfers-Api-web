@@ -3,9 +3,10 @@ import { watch } from "vue";
 import RequestForm from "./RequestForm.vue";
 import ResponsePanel from "./ResponsePanel.vue";
 import { useMainPanel } from "../composables/useMainPanel";
+import type { Endpoint } from "../stores/app";
 
 const props = defineProps<{
-  selectedEndpoint: any;
+  selectedEndpoint: Endpoint | null;
 }>();
 
 const {

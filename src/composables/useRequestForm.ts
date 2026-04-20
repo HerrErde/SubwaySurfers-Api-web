@@ -1,13 +1,10 @@
 import { ref, computed, watch, isRef, unref } from "vue";
+import type { Ref } from "vue";
 import { useAppStore } from "../stores/app";
-import { createPromiseClient } from "@connectrpc/connect";
-import { createConnectTransport } from "@connectrpc/connect-web";
-import { PrivateService as PlayerService } from "../gen/player_connect";
-import { PrivateService as FriendsService } from "../gen/friends_connect";
-import { PrivateService as WalletService } from "../gen/wallet_connect";
-import { PrivateService as TournamentService } from "../gen/tournament_connect";
+import type { Endpoint } from "../stores/app";
+import { ApiClient } from "../api/ApiClient";
 
-export function useRequestForm(endpoint: any) {
+export function useRequestForm(endpoint: Endpoint | Ref<Endpoint | null>) {
   const store = useAppStore();
   const endpointRef = isRef(endpoint) ? endpoint : ref(endpoint);
   const getEndpoint = () => unref(endpointRef);
@@ -40,7 +37,29 @@ export function useRequestForm(endpoint: any) {
     }
   };
 
-  const isLeafParam = (p: any) => {
+  interface Param {
+    type?: string;
+    metadata?: Record<
+      string,
+      {
+        regex?: string;
+        example?: string;
+        errordesc?: string;
+        name?: string;
+        options?: string[];
+        type?: string;
+        desc?: string;
+      }
+    >;
+    regex?: string;
+    example?: string;
+    required?: boolean;
+    default?: any;
+    name?: string;
+    value?: string;
+  }
+
+  const isLeafParam = (p: Param) => {
     if (!p || typeof p !== "object") return false;
     return (
       "type" in p ||
@@ -54,18 +73,106 @@ export function useRequestForm(endpoint: any) {
     );
   };
 
-  const flattenParams = (params: any, prefix = ""): Array<any> => {
-    const out: Array<any> = [];
+  const flattenParams = (
+    params: Record<string, any>,
+    prefix = ""
+  ): Array<{ key: string; param: Param }> => {
+    const out: Array<{ key: string; param: Param }> = [];
     if (!params) return out;
     for (const [k, v] of Object.entries(params)) {
       const fullKey = prefix ? `${prefix}.${k}` : k;
       if (isLeafParam(v)) {
         out.push({ key: fullKey, param: v });
       } else {
-        out.push(...flattenParams(v as any, fullKey));
+        out.push(...flattenParams(v as Record<string, any>, fullKey));
       }
     }
     return out;
+  };
+
+  const getParamsFor = (ep: any): Record<string, any> => {
+    if (!ep) return {};
+    return ep.pathParams ?? ep.bodyParams ?? {};
+  };
+
+  const normalizeParamValue = (param: Param, value: any): any => {
+    if (value === "" || value === null || value === undefined) {
+      return undefined;
+    }
+
+    if (param?.type === "int") {
+      const parsed = parseInt(String(value), 10);
+      return Number.isNaN(parsed) ? undefined : parsed;
+    }
+
+    return value;
+  };
+
+  const pruneEmpty = (value: any): any => {
+    if (Array.isArray(value)) {
+      const next = value
+        .map((entry) => pruneEmpty(entry))
+        .filter((entry) => entry !== undefined);
+      return next.length > 0 ? next : undefined;
+    }
+
+    if (value && typeof value === "object") {
+      const next = Object.fromEntries(
+        Object.entries(value)
+          .map(([key, entry]) => [key, pruneEmpty(entry)])
+          .filter(([, entry]) => entry !== undefined)
+      );
+      return Object.keys(next).length > 0 ? next : undefined;
+    }
+
+    if (value === "" || value === null || value === undefined) {
+      return undefined;
+    }
+
+    if (typeof value === "number" && Number.isNaN(value)) {
+      return undefined;
+    }
+
+    return value;
+  };
+
+  const isArrayIndex = (segment: string) => /^\d+$/.test(segment);
+
+  const setNestedValue = (target: any, path: string[], value: any) => {
+    let current = target;
+
+    for (let i = 0; i < path.length - 1; i++) {
+      const segment = path[i];
+      const nextSegment = path[i + 1];
+      const nextIsIndex = isArrayIndex(nextSegment);
+
+      if (isArrayIndex(segment)) {
+        const index = Number(segment);
+        if (!Array.isArray(current)) {
+          return;
+        }
+        if (current[index] === undefined) {
+          current[index] = nextIsIndex ? [] : {};
+        }
+        current = current[index];
+      } else {
+        if (current[segment] === undefined) {
+          current[segment] = nextIsIndex ? [] : {};
+        }
+        current = current[segment];
+      }
+    }
+
+    const lastSegment = path[path.length - 1];
+    if (isArrayIndex(lastSegment)) {
+      if (!Array.isArray(current)) {
+        return;
+      }
+      current[Number(lastSegment)] = value;
+      return;
+    }
+
+    current[lastSegment] = value;
   };
 
   const initializeForm = () => {
@@ -74,8 +181,9 @@ export function useRequestForm(endpoint: any) {
     errors.value = null;
     playerDataJson.value = "";
 
-    if (getEndpoint().params) {
-      const flat = flattenParams(getEndpoint().params || {});
+    const params = getParamsFor(getEndpoint());
+    if (params && Object.keys(params).length > 0) {
+      const flat = flattenParams(params || {});
       flat.forEach(({ key, param }: { key: string; param: any }) => {
         if (param.type !== "list") {
           const fieldName = param.value || key;
@@ -114,7 +222,7 @@ export function useRequestForm(endpoint: any) {
   };
 
   const availableMetadataKeys = computed(() => {
-    const metaEntry = flattenParams(getEndpoint().params || {}).find(
+    const metaEntry = flattenParams(getParamsFor(getEndpoint()) || {}).find(
       (e: any) => e.param?.type === "list" && e.param?.metadata
     );
     if (!metaEntry) return [];
@@ -125,7 +233,7 @@ export function useRequestForm(endpoint: any) {
   });
 
   const getMetadataDef = (key: string) => {
-    const metaEntry = flattenParams(getEndpoint().params || {}).find(
+    const metaEntry = flattenParams(getParamsFor(getEndpoint()) || {}).find(
       (e: any) => e.param?.type === "list" && e.param?.metadata
     );
     return metaEntry?.param?.metadata?.[key];
@@ -134,7 +242,7 @@ export function useRequestForm(endpoint: any) {
   const validate = () => {
     if (store.limitsDisabled) return true;
 
-    const flat = flattenParams(getEndpoint().params || {});
+    const flat = flattenParams(getParamsFor(getEndpoint()) || {});
     for (const entry of flat) {
       const key = entry.key;
       const p = entry.param as any;
@@ -168,19 +276,19 @@ export function useRequestForm(endpoint: any) {
     return true;
   };
 
-  const buildBody = (currentEndpoint: any = getEndpoint()) => {
-    let body: any = {};
+  const buildBody = (
+    currentEndpoint: any = getEndpoint()
+  ): Record<string, any> => {
+    if (!currentEndpoint) return {};
+    let body: Record<string, any> = {};
 
     if (currentEndpoint.body) {
       const fillTemplate = (obj: any): any => {
         if (typeof obj === "string" && obj.startsWith("$")) {
           const key = obj.slice(1);
-          let val = formValues.value[key];
-          const param = currentEndpoint.params?.[key];
-          if (param?.type === "int" || param === "int") {
-            val = parseInt(val, 10);
-          }
-          return val;
+          const param = currentEndpoint.bodyParams?.[key];
+          const val = formValues.value[key];
+          return normalizeParamValue(param, val);
         } else if (typeof obj === "object" && obj !== null) {
           const out = Array.isArray(obj) ? [] : {};
           for (const k in obj) (out as any)[k] = fillTemplate(obj[k]);
@@ -189,8 +297,9 @@ export function useRequestForm(endpoint: any) {
         return obj;
       };
       body = fillTemplate(currentEndpoint.body);
-    } else if (currentEndpoint.params) {
-      const flat = flattenParams(currentEndpoint.params || {});
+    } else {
+      const params = getParamsFor(currentEndpoint);
+      const flat = flattenParams(params || {});
       flat.forEach(({ key, param }: { key: string; param: any }) => {
         if (param.type === "list" && param.metadata) {
           if (metadataEntries.value.length > 0) {
@@ -204,22 +313,17 @@ export function useRequestForm(endpoint: any) {
           }
         } else {
           const fieldName = param.value || key;
-          let val = formValues.value[fieldName];
-          if (param.type === "int" || param === "int") {
-            val = parseInt(val, 10);
+          const val = normalizeParamValue(param, formValues.value[fieldName]);
+
+          if (val === undefined) {
+            return;
           }
 
-          const parts = key.split(".");
-          let current = body;
-          for (let i = 0; i < parts.length - 1; i++) {
-            if (!current[parts[i]]) current[parts[i]] = {};
-            current = current[parts[i]];
-          }
-          current[parts[parts.length - 1]] = val;
+          setNestedValue(body, key.split("."), val);
         }
       });
     }
-    return body;
+    return pruneEmpty(body) ?? {};
   };
 
   const handleSubmit = async (
@@ -228,7 +332,7 @@ export function useRequestForm(endpoint: any) {
   ) => {
     errors.value = null;
     if (!store.identityToken) {
-      errors.value = "Upload JSON first!";
+      // errors.value = "Upload JSON first!";
       notify(
         "error",
         "Token missing",
@@ -238,7 +342,7 @@ export function useRequestForm(endpoint: any) {
     }
 
     if (store.isTokenExpired) {
-      errors.value = "Token has expired";
+      // errors.value = "Token has expired";
       notify("error", "Token expired", "Upload a fresh identity file");
       return;
     }
@@ -266,71 +370,42 @@ export function useRequestForm(endpoint: any) {
         return;
       }
 
-      const baseUrl = "https://subway.prod.sybo.net";
+      const client = ApiClient.getInstance();
 
-      if (currentEndpoint.type === "json") {
-        const res = await fetch(
-          store.corsProxy + baseUrl + currentEndpoint.endpoint,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${store.identityToken}`,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(body),
-            signal: abortController.signal
-          }
-        );
-        const data = await res.json();
-        if (currentGeneration === requestGeneration) {
-          onResponse(JSON.stringify(data, null, 2));
-        }
-      } else {
-        // Connect-gRPC
-        const transport = createConnectTransport({
-          baseUrl: store.corsProxy + baseUrl + "/rpc",
-          useBinaryFormat: true,
-          interceptors: [
-            (next) => async (req) => {
-              req.header.set("Authorization", `Bearer ${store.identityToken}`);
-              req.header.set(
-                "User-Agent",
-                "grpc-dotnet/2.63.0 (Mono Unity; CLR 4.0.30319.17020; netstandard2.0; arm64) com.kiloo.subwaysurf/3.47.0"
-              );
-              return await next(req);
+      // Build pathParams for any placeholders like :uuid in the endpoint
+      const pathParams: Record<string, string> = {};
+      const paramsForEndpoint = getParamsFor(currentEndpoint);
+      if (paramsForEndpoint) {
+        for (const [pkey, pdef] of Object.entries(paramsForEndpoint)) {
+          try {
+            if (
+              currentEndpoint.endpoint &&
+              String(currentEndpoint.endpoint).includes(`:${pkey}`)
+            ) {
+              const fieldName = (pdef as any).value || pkey;
+              const val = formValues.value[fieldName];
+              if (val !== undefined && val !== null && String(val) !== "") {
+                pathParams[pkey] = String(val);
+              }
             }
-          ]
-        });
-
-        let client: any;
-        const path = currentEndpoint.endpoint.replace("/rpc/", "/");
-        let methodName = path.split("/").pop();
-
-        if (methodName) {
-          methodName = methodName.charAt(0).toLowerCase() + methodName.slice(1);
-        }
-
-        if (path.includes("player.ext.v1")) {
-          client = createPromiseClient(PlayerService, transport);
-        } else if (path.includes("friends.ext.v1")) {
-          client = createPromiseClient(FriendsService, transport);
-        } else if (path.includes("wallet.ext.v1")) {
-          client = createPromiseClient(WalletService, transport);
-        } else if (path.includes("tournament.ext.v2")) {
-          client = createPromiseClient(TournamentService, transport);
-        }
-
-        if (client && methodName && client[methodName]) {
-          const response = await client[methodName](body, {
-            signal: abortController?.signal
-          });
-          if (currentGeneration === requestGeneration) {
-            const plainResponse = JSON.parse(JSON.stringify(response));
-            onResponse(JSON.stringify(plainResponse, null, 2));
+          } catch (e) {
+            // ignore malformed param definitions
           }
-        } else {
-          throw new Error(`Service or method ${methodName} not found`);
         }
+      }
+
+      const data = await client.request(currentEndpoint as Endpoint, {
+        body,
+        pathParams
+      });
+      if (currentGeneration === requestGeneration) {
+        onResponse(
+          JSON.stringify(
+            data,
+            (_, v) => (typeof v === "bigint" ? v.toString() : v),
+            2
+          )
+        );
       }
     } catch (err: any) {
       if (err.name === "AbortError") {
@@ -380,7 +455,7 @@ export function useRequestForm(endpoint: any) {
   };
 
   const hasMetadataParam = computed(() => {
-    return flattenParams(endpoint.params || {}).some(
+    return flattenParams(getParamsFor(getEndpoint()) || {}).some(
       (e: any) => e.param?.type === "list" && e.param?.metadata
     );
   });
